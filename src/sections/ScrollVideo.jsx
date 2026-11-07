@@ -82,7 +82,7 @@ export default function ScrollVideo() {
       // On narrow screens use a softer "contain-ish" fit so the drone stays in frame.
       const cover = Math.max(w / VW, h / VH)
       const contain = Math.min(w / VW, h / VH)
-      const scale = w < 768 ? Math.max(contain * 1.35, contain) : cover
+      const scale = w < 768 ? contain * 1.9 : cover // phones: zoom in so the drone fills the width
       setLayout({ scale, ox: (w - VW * scale) / 2, oy: (h - VH * scale) / 2, dpr, vw: w, vh: h })
       lastDrawn.current = -1
     }
@@ -209,7 +209,7 @@ export default function ScrollVideo() {
         </div>
 
         {/* Intro title */}
-        <div style={{ opacity: introOpacity, transform: `translateY(${introY}px)` }} className="pointer-events-none absolute inset-x-0 top-[12vh] px-4 text-center">
+        <div style={{ opacity: introOpacity, transform: `translateY(${introY}px)` }} className="pointer-events-none absolute inset-x-0 top-[17vh] px-4 text-center md:top-[12vh]">
           <div className="eyebrow">Product teardown</div>
           <h2 className="display mt-4 text-[clamp(3rem,10vw,9rem)]">Archimedes <span className="text-accent">1A</span></h2>
           <p className="mx-auto mt-4 max-w-md text-fg-muted">An active radar seeker head that adapts to existing interceptors. Scroll to take it apart.</p>

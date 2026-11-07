@@ -33,16 +33,16 @@ export function Capabilities() {
             <p className="mt-3 max-w-[300px] text-[14px] leading-relaxed text-ink-muted">
               Launches on a C2 fire-control cue, flies under radar guidance, acquires the target beyond visual range, and hands off to terminal guidance.
             </p>
-            <Coil className="pointer-events-none absolute left-1/2 top-[52%] w-[62%] max-w-[260px] -translate-x-1/2 -translate-y-1/2" />
+            <Coil className="pointer-events-none relative mx-auto mb-24 mt-8 block w-[62%] max-w-[240px]" />
             <Tags className="absolute inset-x-6 bottom-6" items={['01 C2 fire control', '02 Launch', '03 Radar midcourse', '04 Terminal seeker']} />
           </Card>
 
           {/* 2 */}
           <Card href="#sequence" index={1} className="min-h-[300px]" eyebrow="Mode 02" title={'Operator-assisted\nguidance'}>
-            <Orbit className="pointer-events-none absolute -bottom-6 right-[-8%] w-[78%] max-w-[330px]" />
-            <p className="absolute bottom-6 left-6 max-w-[170px] text-[12.5px] leading-snug text-ink-muted">
+            <p className="mt-3 max-w-[260px] text-[13px] leading-snug text-ink-muted">
               Streams live target range and bearing to the pilot flying manually.
             </p>
+            <Orbit className="pointer-events-none relative -mb-10 -mr-8 ml-auto mt-1 block w-[80%] max-w-[300px]" />
           </Card>
 
           {/* 3 */}

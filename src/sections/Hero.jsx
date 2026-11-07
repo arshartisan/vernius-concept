@@ -76,7 +76,7 @@ export default function Hero() {
         {/* drone */}
         <motion.div
           style={{ y: droneY, scale: droneScale }}
-          className="pointer-events-none absolute inset-x-0 top-[13%] mx-auto aspect-[2752/1536] w-[118%] max-w-none -translate-x-[8%] md:left-[4%] md:top-[-4%] md:w-[78%] md:translate-x-0 lg:w-[72%]"
+          className="pointer-events-none absolute left-1/2 top-[5%] aspect-[2752/1536] w-[min(175%,70svh)] max-w-none [@media(max-height:780px)]:w-[min(175%,56svh)] -translate-x-1/2 md:left-[4%] md:top-[-4%] md:w-[78%] md:translate-x-0 lg:w-[72%]"
         >
           <motion.div style={{ x: sx, y: sy, rotate: rot }} className="size-full">
             <motion.div animate={{ y: [0, -14, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="relative size-full">
