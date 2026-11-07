@@ -10,14 +10,12 @@ import { Tooltip, TooltipTrigger } from '@/components/base/tooltip/tooltip'
 import { toast } from '@/components/base/toast/toast'
 import { Meter } from '@/components/base/meter/meter'
 import { ProgressBar } from '@/components/base/progress/progress'
-import { Accordion, AccordionItem } from '@/components/base/accordion/accordion'
 import { Divider } from '@/components/base/divider/divider'
 import { Kbd } from '@/components/base/kbd/kbd'
 import { ModalTrigger, Modal, ModalHeader, ModalBody, ModalFooter } from '@/components/base/modal/modal'
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@/components/base/table/table'
 import {
   RiFileCopyLine, RiCheckLine, RiFileList3Line, RiMailSendLine, RiLockLine,
-  RiCpuLine, RiCodeSSlashLine, RiFlightTakeoffLine, RiShakeHandsLine,
 } from '@remixicon/react'
 
 /* ============================== MARQUEE ============================== */
@@ -339,55 +337,8 @@ export function Stages() {
   )
 }
 
-/* ============================== TEAM ============================== */
-export function Team() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y1 = useTransform(scrollYProgress, [0, 1], ['10%', '-10%'])
-  const y2 = useTransform(scrollYProgress, [0, 1], ['-5%', '15%'])
-
-  const facts = [
-    { id: 'rf', icon: RiCpuLine, t: 'RF PCB engineering', d: 'Over a decade', body: 'The team has over a decade of RF PCB engineering experience.' },
-    { id: 'sw', icon: RiCodeSSlashLine, t: 'Critical software', d: 'Tomahawk · LEO satellites', body: 'Past work includes critical software for the US Navy Tomahawk fleet and for low Earth orbit satellites.' },
-    { id: 'fpv', icon: RiFlightTakeoffLine, t: 'Frontline FPV hardware', d: 'Fielded by operators', body: 'FPV hardware the team built is fielded by frontline operators.' },
-    { id: 'dtu', icon: RiShakeHandsLine, t: 'Prototype through live fire', d: 'Spun out of DTU', body: 'Spun out of Defense Tech for Ukraine, we work directly with operators and airframe partners from prototype through live fire.' },
-  ]
-  return (
-    <section id="team" ref={ref} className="relative border-t border-line py-28 md:py-40">
-      <div className="mx-auto grid max-w-[1440px] gap-16 px-4 md:px-8 lg:grid-cols-12">
-        <div className="lg:col-span-6">
-          <div className="eyebrow">05 — Team</div>
-          <RevealText text={'Built with\nthe operators\nwho fly them.'} className="display mt-6 text-[clamp(2.6rem,6vw,5.5rem)]" />
-          <FadeIn delay={0.2}>
-            <p className="mt-8 max-w-lg text-lg leading-relaxed text-fg-muted">
-              Spun out of <span className="text-fg">Defense Tech for Ukraine (DTU)</span>, a volunteer non-profit designing hardware for frontline units. We work directly with operators and airframe partners from prototype through live fire.
-            </p>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <Accordion variant="separated" defaultExpandedKeys={['rf']} className="mt-10">
-              {facts.map((f) => (
-                <AccordionItem key={f.id} id={f.id} icon={f.icon} title={f.t} description={f.d}>
-                  <p className="text-text-secondary">{f.body}</p>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </FadeIn>
-        </div>
-        <div className="relative grid grid-cols-2 gap-4 lg:col-span-6">
-          <motion.div style={{ y: y1 }} className="col-span-2 overflow-hidden rounded-[var(--radius-card)] border border-line">
-            <img src="/images/drone-workshop.webp" alt="Engineers building interceptor hardware in the workshop" className="aspect-[4/3] w-full object-cover" />
-          </motion.div>
-          <motion.div style={{ y: y2 }} className="overflow-hidden rounded-[var(--radius-card)] border border-line">
-            <img src="/images/sting-ii.webp" alt="Interceptor airframe" className="aspect-square w-full object-cover" />
-          </motion.div>
-          <motion.div style={{ y: y2 }} className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-bg">
-            <img src="/images/product-render-2.webp" alt="Archimedes seeker render" className="aspect-square w-full object-cover" />
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
+/* Team lives in ./Team.jsx */
+export { Team } from './Team'
 
 /* ============================== CONTACT / FOOTER ============================== */
 export function Contact() {

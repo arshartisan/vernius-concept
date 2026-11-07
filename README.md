@@ -51,7 +51,7 @@ They import from `@/…`; `tsconfig.json` maps `@/*` to `src/components/boardui/
   - Archimedes teardown: `Spinner` while frames buffer, `ProgressTrack` scrub bar
   - Products: "View specs" `Modal` with a spec `Table`; `Chip`s; `Tooltip` on the restricted Barca 1
   - Engagement sequence: `ProgressBar` with stage label
-  - Team: `Accordion` (separated)
+  - Team: four animated cards in `src/sections/Team.jsx` (RF board pulses, build heat-map, filling dot grid, revision cascade)
   - Footer: `Divider` with a `Kbd` hint
   - `cx` for class merging everywhere
 - Add more with `npx boardui@latest add <name> --path src/components/boardui --yes` (`npx boardui@latest list` shows all).
