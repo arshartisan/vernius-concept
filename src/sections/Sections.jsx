@@ -4,14 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react'
 import { RevealText, FadeIn, Counter, Scramble, TiltCard, Button, Badge } from '../components/ui'
 import { cx } from '@/utils/cx'
+import { SiteFooter } from './Footer'
 import { Chip } from '@/components/base/badges/chip'
 import { Button as BButton } from '@/components/base/buttons/button'
 import { Tooltip, TooltipTrigger } from '@/components/base/tooltip/tooltip'
 import { toast } from '@/components/base/toast/toast'
 import { Meter } from '@/components/base/meter/meter'
 import { ProgressBar } from '@/components/base/progress/progress'
-import { Divider } from '@/components/base/divider/divider'
-import { Kbd } from '@/components/base/kbd/kbd'
 import { ModalTrigger, Modal, ModalHeader, ModalBody, ModalFooter } from '@/components/base/modal/modal'
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@/components/base/table/table'
 import {
@@ -376,22 +375,7 @@ export function Contact() {
         </div>
       </div>
 
-      <footer className="relative">
-        <div className="mx-auto max-w-[1440px] px-4 md:px-8">
-          <Divider align="center" contentClassName="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em]">
-            Press <Kbd>⌘</Kbd><Kbd>K</Kbd> to jump anywhere
-          </Divider>
-        </div>
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-4 px-4 py-8 font-mono text-[11px] uppercase tracking-[0.15em] text-fg-subtle md:flex-row md:items-center md:justify-between md:px-8">
-          <span>© 2026 Vernius Inc.</span>
-          <span>Backed by Y Combinator</span>
-          <a href={`mailto:${email}`} className="hover:text-fg">{email}</a>
-        </div>
-        {/* giant wordmark: only the top ~75% of the letters shows, the rest is cut off by the page bottom */}
-        <div aria-hidden className="h-[16.3vw] select-none overflow-hidden">
-          <div className="display px-2 text-center text-[24vw] leading-[0.8] text-white/[0.04]">Vernius</div>
-        </div>
-      </footer>
+      <SiteFooter email={email} />
     </section>
   )
 }
