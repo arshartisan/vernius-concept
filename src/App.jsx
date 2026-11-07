@@ -9,11 +9,10 @@ import { Marquee, Problem, Capabilities, Products, Stages, Team, Contact } from 
 import { cx } from '@/utils/cx'
 import { Button as BButton, ButtonLink } from '@/components/base/buttons/button'
 import { Toaster } from '@/components/base/toast/toast'
-import { Kbd } from '@/components/base/kbd/kbd'
 import { toast } from '@/components/base/toast/toast'
 import { CommandPalette, CommandPaletteSection, CommandPaletteItem } from '@/components/base/command-palette/command-palette'
 import {
-  RiMenuLine, RiCloseLine, RiSearchLine, RiAlertLine, RiRadarLine, RiBox3Line, RiFocus3Line,
+  RiMenuLine, RiCloseLine, RiAlertLine, RiRadarLine, RiBox3Line, RiFocus3Line,
   RiRouteLine, RiTeamLine, RiMailSendLine, RiFileCopyLine, RiArrowUpLine, RiCompass3Line,
 } from '@remixicon/react'
 
@@ -112,8 +111,6 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [palette, setPalette] = useState(false)
-  const [isMac, setIsMac] = useState(false)
-  useEffect(() => { setIsMac(/Mac|iPhone|iPad/.test(navigator.platform)) }, [])
   // Hide on scroll down, slide back in from the top on scroll up (always shown near the top).
   const [hidden, setHidden] = useState(false)
   useEffect(() => {
@@ -140,7 +137,7 @@ function Nav() {
       onFocusCapture={() => setHidden(false)}
       className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6 md:pt-4"
     >
-      <nav className={cx('mx-auto flex max-w-[1000px] items-center justify-between rounded-full border p-2.5 transition-all duration-500', scrolled ? 'border-line-strong bg-bg/75 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] backdrop-blur-xl' : 'border-white/10 bg-bg/85 backdrop-blur-xl')}>
+      <nav className={cx('mx-auto flex max-w-[800px] items-center justify-between rounded-full border p-2.5 transition-all duration-500', scrolled ? 'border-line-strong bg-bg/75 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] backdrop-blur-xl' : 'border-white/10 bg-bg/85 backdrop-blur-xl')}>
         <a href="#" className="flex items-center gap-2.5" aria-label="Vernius home">
           <Logo />
           <span className="display text-xl tracking-[-0.03em]">Vernius</span>
@@ -156,17 +153,6 @@ function Nav() {
           ))}
         </ul>
         <div className="flex items-center gap-2">
-          <BButton
-            variant="secondary"
-            size="small"
-            leadingIcon={RiSearchLine}
-            onClick={() => setPalette(true)}
-            aria-label="Open command palette"
-            className="hidden gap-1.5 rounded-full bg-transparent px-3 md:inline-flex [&>span]:gap-1.5"
-          >
-            <span className="text-text-secondary">Jump to</span>
-            <Kbd>{isMac ? '⌘' : 'Ctrl'}</Kbd><Kbd>K</Kbd>
-          </BButton>
           <ButtonLink href="#contact" variant="glow" size="small" className="hidden px-3 sm:inline-flex">Get in touch</ButtonLink>
           <BButton
             variant="secondary"

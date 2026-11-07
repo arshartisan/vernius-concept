@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useInView, useScroll, useTransform } from 'motion/react'
+import { motion, useInView } from 'motion/react'
 import { RiCpuLine, RiCodeSSlashLine, RiFlightTakeoffLine, RiShakeHandsLine } from '@remixicon/react'
 import { RevealText, FadeIn } from '../components/ui'
 
 /* ============================== TEAM ==============================
- * Header + workshop photo, then four dark cards. Each card has its own hue and a small
+ * Header, then four dark cards. Each card has its own hue and a small
  * looping illustration that starts when it scrolls into view. */
 
 const ease = [0.16, 1, 0.3, 1]
@@ -37,12 +37,8 @@ const CARDS = [
 ]
 
 export function Team() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], ['-8%', '8%'])
-
   return (
-    <section id="team" ref={ref} className="relative border-t border-line py-28 md:py-40">
+    <section id="team" className="relative border-t border-line py-28 md:py-40">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
@@ -54,16 +50,6 @@ export function Team() {
               <p className="max-w-lg text-lg leading-relaxed text-fg-muted">
                 Spun out of <span className="text-fg">Defense Tech for Ukraine (DTU)</span>, a volunteer non-profit designing hardware for frontline units.
               </p>
-            </FadeIn>
-            <FadeIn delay={0.25}>
-              <div className="mt-8 overflow-hidden rounded-[var(--radius-card)] border border-line">
-                <motion.img
-                  style={{ y: imgY, scale: 1.18 }}
-                  src="/images/drone-workshop.webp"
-                  alt="Engineers building interceptor hardware in the workshop"
-                  className="aspect-[16/8] w-full object-cover"
-                />
-              </div>
             </FadeIn>
           </div>
         </div>
