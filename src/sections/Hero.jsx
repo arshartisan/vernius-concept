@@ -1,281 +1,245 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react'
-import {
-  RiRadarLine, RiFoggyLine, RiShowersLine, RiMoonClearLine, RiWindyLine, RiPlayFill, RiArrowDownSLine,
-} from '@remixicon/react'
+import { useRef, useState } from 'react'
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react'
+import { RiShieldStarLine, RiFoggyLine } from '@remixicon/react'
 import { cx } from '@/utils/cx'
 import { Button } from '../components/ui'
 
-/* Studio hero: a light "product shot" panel inset into the dark page.
- * Two renders of the interceptor rotate (auto-advance, or pick via thumbnails / index). */
-const SHOTS = [
-  { src: '/images/hero-drone-front.webp', alt: 'Interceptor drone with Archimedes radar nose cone, front view', label: 'Front' },
-  { src: '/images/hero-drone-top.webp', alt: 'Interceptor drone with Archimedes radar nose cone, top view', label: 'Top' },
-]
-const INTERVAL = 6000
+/* Framed spotlight hero: column grid, headline top-left, the cut-out interceptor centred in a
+ * copper glow with orbit rings and labelled markers, notched info cards in the side columns. */
 const ease = [0.16, 1, 0.3, 1]
+
+// marker positions are % of the drone stage
+const MARKERS = [
+  { x: 58, y: 25, label: 'Archimedes radar seeker' },
+  { x: 25, y: 66, label: 'Copper-wound motors' },
+  { x: 80, y: 41, label: 'Fold-out wings' },
+]
 
 export default function Hero() {
   const ref = useRef(null)
-  const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const [tick, setTick] = useState(0) // restarts the thumbnail progress bar
-
-  useEffect(() => {
-    if (paused) return
-    const t = setTimeout(() => setActive((a) => (a + 1) % SHOTS.length), INTERVAL)
-    return () => clearTimeout(t)
-  }, [active, paused, tick])
-
-  const pick = (i) => { setActive(i); setTick((n) => n + 1) }
-
-  // scroll: drone drifts up and grows, copy fades
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const droneY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%'])
-  const droneScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
-  const ghostX = useTransform(scrollYProgress, [0, 1], ['0%', '-12%'])
-  const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const droneY = useTransform(scrollYProgress, [0, 1], ['0%', '18%'])
+  const droneScale = useTransform(scrollYProgress, [0, 1], [1, 1.12])
+  const fade = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+  const titleY = useTransform(scrollYProgress, [0, 1], ['0%', '-50%'])
 
-  // pointer parallax
   const px = useMotionValue(0)
   const py = useMotionValue(0)
   const sx = useSpring(px, { stiffness: 50, damping: 18 })
   const sy = useSpring(py, { stiffness: 50, damping: 18 })
-  const rot = useTransform(sx, [-30, 30], [-2.5, 2.5])
-  const cardX = useTransform(sx, (v) => v * -0.6)
-  const cardY = useTransform(sy, (v) => v * -0.6)
+  const rotY = useTransform(sx, [-1, 1], [-9, 9])
+  const rotX = useTransform(sy, [-1, 1], [7, -7])
+  const ringX = useTransform(sx, [-1, 1], [-14, 14])
+  const ringY = useTransform(sy, [-1, 1], [-10, 10])
   const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect()
-    px.set(((e.clientX - r.left) / r.width - 0.5) * 60)
-    py.set(((e.clientY - r.top) / r.height - 0.5) * 40)
+    px.set((e.clientX / window.innerWidth) * 2 - 1)
+    py.set((e.clientY / window.innerHeight) * 2 - 1)
   }
 
   return (
-    <section ref={ref} id="top" className="relative h-svh min-h-[720px] p-2 md:p-3">
-      <div
-        onPointerMove={onMove}
-        className="relative isolate h-full overflow-hidden rounded-[22px] bg-studio text-ink md:rounded-[28px]"
-      >
-        {/* soft studio light */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_55%_40%,rgb(255_255_255/0.35),transparent_70%)]" />
+    <section ref={ref} id="top" onPointerMove={onMove} className="relative h-svh min-h-[760px] overflow-hidden bg-[#070707]">
+      {/* smoke + copper glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_45%,rgb(255_255_255/0.05),transparent_70%)]" />
+      <motion.div
+        animate={{ opacity: [0.75, 1, 0.75], scale: [1, 1.06, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute left-1/2 top-[46%] size-[min(70vw,720px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(224_138_79/0.42),rgb(135_72_37/0.16)_38%,transparent_68%)] blur-2xl"
+      />
 
-        {/* ghost word */}
-        <motion.div
-          style={{ x: ghostX }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.4, ease }}
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-[14%] select-none whitespace-nowrap text-center font-serif text-[22vw] leading-none tracking-[-0.03em] text-white/45 md:top-[12%] md:text-[15.5vw]"
-        >
-          ARCHIMEDES
+      {/* frame lines */}
+      <FrameLines />
+
+      {/* headline */}
+      <motion.div style={{ opacity: fade, y: titleY }} className="relative z-20 px-5 pt-28 md:px-10 lg:pl-[calc(4%+24px)] lg:pt-36">
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease }} className="flex items-center gap-2 text-[13px] text-fg-muted">
+          <span className="h-px w-5 bg-fg-muted" /><span className="size-1 bg-accent" /> Made for existing interceptors
         </motion.div>
-
-        {/* drone */}
-        <motion.div
-          style={{ y: droneY, scale: droneScale }}
-          className="pointer-events-none absolute left-1/2 top-[5%] aspect-[2752/1536] w-[min(175%,70svh)] max-w-none [@media(max-height:780px)]:w-[min(175%,56svh)] -translate-x-1/2 md:left-[4%] md:top-[-4%] md:w-[78%] md:translate-x-0 lg:w-[72%]"
-        >
-          <motion.div style={{ x: sx, y: sy, rotate: rot }} className="size-full">
-            <motion.div animate={{ y: [0, -14, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="relative size-full">
-              <AnimatePresence initial={false} mode="popLayout">
-                <motion.img
-                  key={SHOTS[active].src}
-                  src={SHOTS[active].src}
-                  alt={SHOTS[active].alt}
-                  initial={{ opacity: 0, scale: 0.94, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, scale: 1.04, filter: 'blur(8px)' }}
-                  transition={{ duration: 1.1, ease }}
-                  fetchPriority="high"
-                  className="absolute inset-0 size-full object-contain [mask-image:radial-gradient(ellipse_50%_55%_at_50%_50%,black_62%,transparent_100%)]"
-                />
-              </AnimatePresence>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
-        {/* vertical product label */}
-        <motion.div style={{ opacity: fade }} className="absolute left-5 top-28 hidden flex-col items-center gap-8 md:flex lg:left-7">
-          <span className="font-serif text-[15px] tracking-[0.18em] text-ink/75 [writing-mode:vertical-rl] rotate-180">
-            ARCHIMEDES 1A · RADAR SEEKER
-          </span>
-          <span className="flex flex-col gap-2" aria-hidden>
-            {[0, 1, 2, 3, 4].map((i) => (
-              <span key={i} className={cx('h-px bg-ink/40', i === 3 ? 'w-6' : 'w-4')} />
-            ))}
-          </span>
-        </motion.div>
-
-        {/* glass cards */}
-        <motion.div style={{ x: cardX, y: cardY, opacity: fade }} className="absolute right-[6%] top-[22%] hidden md:block lg:right-[9%]">
-          <GlassCard delay={1.0} className="w-[260px]">
-            <div className="flex items-center gap-2 text-[15px] font-semibold">
-              <RiRadarLine className="size-[18px] text-accent-600" aria-hidden /> Active radar seeker
-            </div>
-            <p className="mt-2 text-[13px] leading-snug text-ink-muted">
-              Detects Shahed-class targets beyond visual range, then hands off to vision for the terminal phase.
-            </p>
-          </GlassCard>
-        </motion.div>
-
-        <motion.div style={{ x: cardX, y: cardY, opacity: fade }} className="absolute right-[3%] top-[47%] hidden lg:block xl:right-[6%]">
-          <GlassCard delay={1.2} className="w-[290px]">
-            <div className="flex items-center gap-3.5">
-              <Ring value={50} label="50%+" />
-              <p className="text-[13.5px] leading-snug">
-                of Shaheds are now jet-powered, too fast to catch by eye.
-              </p>
-            </div>
-            <div className="mt-4 flex items-center justify-between border-t border-ink/10 px-2 pt-3 text-ink-muted" aria-label="Works in fog, rain, darkness and smoke">
-              {[RiFoggyLine, RiShowersLine, RiMoonClearLine, RiWindyLine].map((I, i) => <I key={i} className="size-4" aria-hidden />)}
-            </div>
-          </GlassCard>
-        </motion.div>
-
-        {/* slide index */}
-        <div className="absolute right-5 top-1/2 hidden -translate-y-1/2 flex-col items-end gap-3 md:flex lg:right-7">
-          {SHOTS.map((s, i) => (
-            <button
-              key={s.src}
-              onClick={() => pick(i)}
-              aria-label={`Show ${s.label.toLowerCase()} view`}
-              aria-current={i === active}
-              className={cx('flex items-center gap-2 font-mono text-[12px] transition-colors', i === active ? 'font-semibold text-ink' : 'text-ink/40 hover:text-ink/70')}
-            >
-              <motion.span animate={{ width: i === active ? 10 : 0 }} className="h-px bg-ink" />
-              {String(i + 1).padStart(2, '0')}
-            </button>
+        <h1 className="mt-4 max-w-[640px] text-[clamp(2.6rem,4.6vw,4.6rem)] font-normal leading-[0.98] tracking-[-0.05em]" aria-label="Low cost radars for interceptors">
+          {['Low cost radars', 'for interceptors'].map((line, i) => (
+            <span key={line} className="block overflow-hidden pb-[0.06em]" aria-hidden>
+              <motion.span initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: 1.1, ease, delay: 0.2 + i * 0.1 }} className="block">
+                {line}
+              </motion.span>
+            </span>
           ))}
-        </div>
+        </h1>
+      </motion.div>
 
-        {/* headline + copy */}
-        <motion.div style={{ opacity: fade }} className="absolute inset-x-0 bottom-[118px] px-5 md:bottom-[160px] md:px-16 lg:px-20">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <h1 className="font-display font-bold uppercase leading-[0.92] tracking-[-0.035em] text-[clamp(2.3rem,5vw,5.6rem)] md:whitespace-nowrap">
-              <span className="block overflow-hidden">
-                <motion.span initial={{ y: '105%' }} animate={{ y: 0 }} transition={{ duration: 1.1, ease, delay: 0.3 }} className="block bg-[linear-gradient(90deg,var(--color-ink)_55%,rgb(13_13_14/0.25))] bg-clip-text text-transparent">
-                  Low cost radars
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden pl-[0.9em]">
-                <motion.span initial={{ y: '105%' }} animate={{ y: 0 }} transition={{ duration: 1.1, ease, delay: 0.42 }} className="block">
-                  <span className="mr-[0.25em] font-light tracking-[-0.12em] text-accent-600">///</span>
-                  <span className="bg-[linear-gradient(90deg,var(--color-ink)_20%,rgb(13_13_14/0.12))] bg-clip-text text-transparent">for interceptors</span>
-                </motion.span>
-              </span>
-            </h1>
+      {/* drone stage */}
+      <motion.div style={{ y: droneY, scale: droneScale }} className="pointer-events-none absolute left-1/2 top-[50%] z-10 aspect-square w-[min(92vw,560px,64svh)] -translate-x-1/2 -translate-y-[38%] md:top-[50%] md:-translate-y-1/2">
+        {/* orbit rings */}
+        <motion.svg style={{ x: ringX, y: ringY }} viewBox="0 0 600 600" className="absolute inset-[-8%] size-[116%] overflow-visible" aria-hidden>
+          <motion.g animate={{ rotate: 360 }} transition={{ duration: 90, repeat: Infinity, ease: 'linear' }} style={{ originX: '300px', originY: '300px' }}>
+            <circle cx="300" cy="300" r="215" fill="none" stroke="rgb(255 255 255 / 0.16)" />
+            <circle cx="515" cy="300" r="3" fill="rgb(255 255 255 / 0.7)" />
+          </motion.g>
+          <motion.g animate={{ rotate: -360 }} transition={{ duration: 120, repeat: Infinity, ease: 'linear' }} style={{ originX: '300px', originY: '300px' }}>
+            <circle cx="300" cy="300" r="262" fill="none" stroke="rgb(255 255 255 / 0.1)" strokeDasharray="2 6" />
+            <circle cx="38" cy="300" r="3" fill="var(--color-accent)" />
+          </motion.g>
+          <Cross x={505} y={95} />
+          <Cross x={95} y={505} />
+        </motion.svg>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease, delay: 0.9 }} className="max-w-[440px] lg:mb-2">
-              <div className="flex gap-4">
-                <span className="mt-[11px] hidden h-px w-12 shrink-0 bg-ink/40 md:block" />
-                <p className="text-[15px] leading-relaxed text-ink-muted">
-                  Active radar seekers and ground radars for counter-UAS. All-weather Shahed detection that works with your existing interceptors and platforms.
-                </p>
-              </div>
-              <div className="mt-6 flex items-center gap-5 md:pl-16">
-                <Button href="#products">Learn more</Button>
-                <a href="#contact" className="group relative text-[15px] font-medium text-ink">
-                  Get in touch
-                  <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-ink transition-transform duration-500 group-hover:scale-x-100" />
-                </a>
-              </div>
-            </motion.div>
-          </div>
+        <motion.div style={{ rotateY: rotY, rotateX: rotX }} className="absolute inset-[12%] [perspective:1000px]">
+          <motion.img
+            src="/images/drone-top-cutout.webp"
+            alt="Interceptor carrying the Archimedes radar seeker"
+            fetchPriority="high"
+            initial={{ opacity: 0, scale: 0.85, filter: 'blur(12px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', y: [0, -14, 0] }}
+            transition={{ opacity: { duration: 1.2, ease }, scale: { duration: 1.4, ease }, filter: { duration: 1.2 }, y: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }}
+            className="size-full object-contain drop-shadow-[0_40px_50px_rgb(0_0_0/0.75)]"
+          />
         </motion.div>
 
-        {/* bottom row: thumbnails · preview · scroll */}
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 md:p-6">
-          <div className="flex items-end gap-3" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
-            {SHOTS.map((s, i) => (
-              <button
-                key={s.src}
-                onClick={() => pick(i)}
-                aria-label={`Show ${s.label.toLowerCase()} view`}
-                aria-pressed={i === active}
-                className={cx(
-                  'group relative overflow-hidden rounded-2xl border bg-white/25 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.35)] backdrop-blur-md transition-all duration-500',
-                  i === active ? 'h-[72px] w-[104px] border-white/70 md:h-[104px] md:w-[150px]' : 'h-[52px] w-[74px] border-white/40 opacity-80 hover:opacity-100 md:h-[72px] md:w-[104px]',
-                )}
-              >
-                <img src={s.src} alt="" className="absolute inset-0 size-full scale-[1.9] object-contain transition-transform duration-700 group-hover:scale-[2.05]" />
-                {i === active && (
-                  <span className="absolute inset-x-3 bottom-2 h-[3px] overflow-hidden rounded-full bg-ink/15">
-                    <motion.span
-                      key={`${active}-${tick}`}
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: paused ? undefined : 1 }}
-                      transition={{ duration: INTERVAL / 1000, ease: 'linear' }}
-                      className="block h-full origin-left rounded-full bg-ink"
-                    />
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+        {/* markers */}
+        {MARKERS.map((m, i) => <Marker key={m.label} {...m} delay={1.4 + i * 0.2} />)}
+      </motion.div>
 
-          <div className="flex items-end gap-3">
-            <a href="#archimedes" className="group hidden items-center gap-3 rounded-2xl border border-white/50 bg-white/30 p-2.5 pr-5 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.3)] backdrop-blur-md transition-colors hover:bg-white/45 md:flex">
-              <span className="relative grid size-12 place-items-center rounded-full bg-ink text-white shadow-[0_6px_16px_-4px_rgb(0_0_0/0.5)] transition-transform duration-500 group-hover:scale-105">
-                <span className="ping-ring absolute inset-0 rounded-full border border-ink/40" />
-                <RiPlayFill className="size-5" aria-hidden />
-              </span>
-              <span>
-                <span className="block text-[14px] font-semibold">Watch the teardown</span>
-                <span className="block text-[12.5px] text-ink-muted">Archimedes 1A, part by part</span>
-              </span>
-            </a>
-            <a href="#problem" aria-label="Scroll to next section" className="grid h-[56px] w-11 place-items-center rounded-2xl border border-white/50 bg-white/30 backdrop-blur-md md:h-[72px]">
-              <span className="flex flex-col -space-y-2.5">
-                {[0, 1, 2].map((i) => (
-                  <motion.span key={i} animate={{ opacity: [0.25, 1, 0.25] }} transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.2 }}>
-                    <RiArrowDownSLine className="size-4" aria-hidden />
-                  </motion.span>
-                ))}
-              </span>
-            </a>
+      {/* left card: pilot telemetry */}
+      <motion.div
+        style={{ opacity: fade }}
+        initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1, ease, delay: 1 }}
+        className="absolute bottom-0 left-[4%] z-20 hidden w-[230px] lg:block xl:w-[250px]"
+      >
+        <Notched corner="tr">
+          <div className="p-4">
+            <h3 className="text-[15px] font-medium tracking-[-0.02em]">Live pilot telemetry</h3>
+            <p className="mt-2 text-[12px] leading-snug text-fg-muted">Operator-assisted mode streams live target range and bearing to the pilot flying manually.</p>
           </div>
-        </div>
-      </div>
+          <Phone />
+        </Notched>
+      </motion.div>
+
+      {/* right cards */}
+      <motion.div
+        style={{ opacity: fade }}
+        initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1, ease, delay: 1.1 }}
+        className="absolute right-[4%] top-[22%] z-20 hidden w-[230px] lg:block xl:w-[250px]"
+      >
+        <Notched corner="tl">
+          <div className="p-4">
+            <span className="grid size-6 place-items-center bg-accent text-ink"><RiShieldStarLine className="size-3.5" aria-hidden /></span>
+            <h3 className="mt-4 text-[15px] font-medium tracking-[-0.02em]">Backed by Y Combinator</h3>
+            <p className="mt-2 text-[12px] leading-snug text-fg-muted">Spun out of Defense Tech for Ukraine. We work directly with operators and airframe partners.</p>
+          </div>
+        </Notched>
+      </motion.div>
+
+      <motion.div
+        style={{ opacity: fade }}
+        initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1, ease, delay: 1.25 }}
+        className="absolute bottom-10 right-[4%] z-20 hidden w-[230px] px-4 lg:block xl:w-[250px]"
+      >
+        <RiFoggyLine className="size-7 text-fg-subtle" aria-hidden />
+        <h3 className="mt-4 text-[15px] font-medium tracking-[-0.02em]">All-weather detection</h3>
+        <p className="mt-2 text-[12px] leading-snug text-fg-muted">Detects Shahed-class targets beyond visual range, in fog, smoke, rain and darkness.</p>
+      </motion.div>
+
+      {/* CTA */}
+      <motion.div
+        style={{ opacity: fade }}
+        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.9, ease, delay: 1.2 }}
+        className="absolute bottom-10 left-1/2 z-20 flex -translate-x-1/2 md:bottom-12"
+      >
+        <Button href="#products">Explore more</Button>
+      </motion.div>
     </section>
   )
 }
 
-function GlassCard({ children, className, delay = 0 }) {
+function FrameLines() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      transition={{ duration: 0.9, ease, delay }}
-      className={cx(
-        'rounded-2xl border border-white/55 bg-white/30 p-4 text-ink backdrop-blur-xl',
-        'shadow-[0_20px_50px_-20px_rgb(0_0_0/0.35),inset_0_1px_0_rgb(255_255_255/0.6)]',
-        className,
-      )}
-    >
-      {children}
-    </motion.div>
+    <div className="pointer-events-none absolute inset-0 z-0 hidden lg:block" aria-hidden>
+      {['left-[24%]', 'right-[24%]'].map((pos, i) => (
+        <motion.span
+          key={pos}
+          initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 1.4, ease, delay: 0.1 + i * 0.1 }}
+          className={cx('absolute top-0 h-full w-px origin-top bg-white/[0.08]', pos)}
+        />
+      ))}
+      <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.4, ease }} className="absolute inset-x-0 top-[92px] h-px origin-left bg-white/[0.08]" />
+      {['left-[24%]', 'right-[24%]'].map((pos) => (
+        <span key={pos} className={cx('absolute top-[89px] size-[7px] -translate-x-[3px] bg-white/40', pos === 'right-[24%]' && 'translate-x-[3px]', pos)} />
+      ))}
+    </div>
   )
 }
 
-function Ring({ value, label }) {
-  const r = 22
-  const c = 2 * Math.PI * r
+function Cross({ x, y }) {
   return (
-    <span className="relative grid size-[58px] shrink-0 place-items-center">
-      <svg viewBox="0 0 52 52" className="absolute inset-0 size-full -rotate-90" aria-hidden>
-        <circle cx="26" cy="26" r={r} fill="none" stroke="rgb(13 13 14 / 0.1)" strokeWidth="4" />
-        <motion.circle
-          cx="26" cy="26" r={r} fill="none" stroke="var(--color-accent-500)" strokeWidth="4" strokeLinecap="round"
-          strokeDasharray={c}
-          initial={{ strokeDashoffset: c }}
-          animate={{ strokeDashoffset: c * (1 - value / 100) }}
-          transition={{ duration: 1.6, ease, delay: 1.4 }}
-        />
-      </svg>
-      <span className="text-[13px] font-semibold">{label}</span>
-    </span>
+    <g transform={`translate(${x} ${y})`}>
+      <motion.circle r="14" fill="none" stroke="rgb(255 255 255 / 0.35)" animate={{ r: [14, 18, 14] }} transition={{ duration: 3, repeat: Infinity }} />
+      <path d="M-5 0H5M0 -5V5" stroke="rgb(255 255 255 / 0.7)" />
+    </g>
+  )
+}
+
+function Marker({ x, y, label, delay }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <motion.button
+      type="button"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.5, ease, delay }}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
+      aria-label={label}
+      style={{ left: `${x}%`, top: `${y}%` }}
+      className="pointer-events-auto absolute z-10 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-black/30 backdrop-blur-sm"
+    >
+      <span className="ping-ring absolute inset-0 rounded-full border border-accent/70" />
+      <span className="text-[13px] leading-none text-fg">+</span>
+      <motion.span
+        initial={false}
+        animate={{ opacity: hover ? 1 : 0, y: hover ? 0 : 4 }}
+        className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line-strong bg-[#0c0c0d]/90 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-fg"
+      >
+        {label}
+      </motion.span>
+    </motion.button>
+  )
+}
+
+/* Card with one clipped corner and a hairline border that follows the cut. */
+function Notched({ corner = 'tr', children }) {
+  const c = 22
+  const clip = corner === 'tr'
+    ? `polygon(0 0, calc(100% - ${c}px) 0, 100% ${c}px, 100% 100%, 0 100%)`
+    : `polygon(${c}px 0, 100% 0, 100% 100%, 0 100%, 0 ${c}px)`
+  return (
+    <div style={{ clipPath: clip }} className="bg-white/[0.14] p-px">
+      <div style={{ clipPath: clip }} className="bg-[#111112]/90 backdrop-blur-xl">{children}</div>
+    </div>
+  )
+}
+
+/* Phone mockup with a live-looking operator display. */
+function Phone() {
+  return (
+    <div className="mx-4 h-[150px] overflow-hidden rounded-t-[22px] border-x border-t border-white/20 bg-[#050505] p-3 xl:h-[160px]">
+      <div className="relative h-full overflow-hidden rounded-t-[14px] bg-[#0b0b0c]">
+        <svg viewBox="0 0 200 140" className="absolute inset-0 size-full" aria-hidden>
+          {[0, 1, 2, 3, 4, 5].map((i) => <path key={i} d={`M${-20 + i * 40} 0 L${30 + i * 40} 140`} stroke="rgb(255 255 255 / 0.06)" />)}
+          {[0, 1, 2, 3].map((i) => <path key={`h${i}`} d={`M0 ${20 + i * 34} L200 ${10 + i * 34}`} stroke="rgb(255 255 255 / 0.06)" />)}
+          <motion.circle cx="120" cy="78" r="6" fill="none" stroke="var(--color-signal)" animate={{ r: [6, 26], opacity: [0.8, 0] }} transition={{ duration: 2, repeat: Infinity }} />
+          <circle cx="120" cy="78" r="3" fill="var(--color-signal)" />
+        </svg>
+        <div className="absolute left-3 top-3 text-[9.5px] leading-tight">
+          <div className="text-fg-subtle">Link</div>
+          <div className="font-medium text-fg">Archimedes 1A</div>
+        </div>
+        <span className="absolute right-3 top-3 grid size-5 place-items-center rounded-full bg-white text-ink">
+          <span className="size-1.5 rounded-full bg-ink" />
+        </span>
+        <div className="absolute bottom-2 left-3 font-mono text-[9.5px] text-signal">RNG 1.84 KM · BRG 042°</div>
+      </div>
+    </div>
   )
 }
